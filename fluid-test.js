@@ -1,8 +1,17 @@
+// var gravity = 0.03;
+// var atomFieldSize = 50;
+// var atomForce = 0.5;
+// var bounceFactor = 0.5;
+// var numParticles = 500;
 var gravity = 0.05;
 var atomFieldSize = 30;
 var atomForce = 0.1;
 var bounceFactor = 0.5;
-var numParticles = 500;
+var numParticles = 300;
+
+var programStart = (new Date).getTime();
+var framesRun = 0;
+var nextFPS = 5;
 
 $(function() {
 
@@ -31,12 +40,18 @@ $(function() {
     //     particles.push(new Particle(Math.random() * gui.width, Math.random() * gui.height, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2));
     // }
 
-    window.particles = particles;
     // Main Loop
     setInterval(function() {
+        var timeElapsed = ((new Date).getTime() - programStart) / 1000;
+        if (timeElapsed > nextFPS) {
+            nextFPS += 5;
+            console.log("Time expired: " + timeElapsed);
+            console.log("Frames computed: " + framesRun);
+            console.log("Frames per second: " + framesRun / timeElapsed);
+        }
         gui.bufferctx.fillStyle = "#FFFFFF";
 
-        if (particles.length < 500 && Math.random() < 0.1) {
+        if (particles.length < numParticles && Math.random() < 0.25) {
             particles.push(new Particle(gui.width / 2 + ((Math.random() - 0.5) * 0.1), 0, 0, 0));
         }
 
@@ -76,11 +91,17 @@ $(function() {
             if (particle.x >= gui.width) particle.x = gui.width - 1;
             if (particle.y < 0) particle.y = 0;
             if (particle.y >= gui.height) particle.y = gui.height - 1;
-
-            drawParticle(gui, particle)
         }
 
-        refreshScreen(gui);
+        if (framesRun % 2 === 0) {
+            for (var ref1 in particles) {
+                var particle = particles[ref1];
+                drawParticle(gui, particle);
+            }
+            refreshScreen(gui);
+        }
+
+        framesRun++;
 
     }, 10);
 });
